@@ -1,23 +1,95 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title><%= content_for(:title) || "Userlocation" %></title>
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <%= csrf_meta_tags %>
-    <%= csp_meta_tag %>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Location Finder</title>
+</head>
+<body>
+<h1>Location Finder</h1>
+<p>Click the button to get your coordinates.</p>
 
-    <%= yield :head %>
+<button onclick="getLocation()">Show Coordinates</button>
 
-    <link rel="manifest" href="/manifest.json">
-    <link rel="icon" href="/icon.png" type="image/png">
-    <link rel="icon" href="/icon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/icon.png">
-    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
-    <%= javascript_importmap_tags %>
-  </head>
+<p id="demo"></p>
 
-  <body>
-    <%= yield %>
-  </body>
+<label for="radius">Select radius:</label>
+<select id="radius" onchange="findNearbyUsers()">
+    <option value="2">2 km</option>
+    <option value="5">5 km</option>
+    <option value="10">10 km</option>
+    <option value="20">20 km</option>
+    <option value="30">30 km</option>
+</select>
+
+<div id="nearbyUsers"></div>
+
+<script>
+const x = document.getElementById("demo");
+const nearbyUsersDiv = document.getElementById("nearbyUsers");
+let userLatitude, userLongitude;
+
+
+const users = [
+    { name: "User 1", latitude: 28.6139, longitude: 77.2090 }, 
+    { name: "User 2", latitude: 28.4082, longitude: 77.3173 }, 
+    { name: "User 3", latitude: 28.5355, longitude: 77.3910 }  
+];
+
+function getLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(showPosition);
+    } else {
+        x.innerHTML = "Geolocation is not supported by this browser.";
+    }
+}
+
+function showPosition(position) {
+    userLatitude = position.coords.latitude;
+    userLongitude = position.coords.longitude;
+    
+    x.innerHTML = "Latitude: " + userLatitude + 
+    "<br>Longitude: " + userLongitude;
+    findNearbyUsers(); 
+}
+
+function haversineDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371; // Radius of the Earth in km
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = 
+        Math.sin(dLat/2) * Math.sin(dLat/2) +
+        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+        Math.sin(dLon/2) * Math.sin(dLon/2); 
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+    return R * c; // Distance in km
+}
+
+function findNearbyUsers() {
+    const radius = document.getElementById("radius").value;
+    nearbyUsersDiv.innerHTML = ""; // Clear previous results
+
+    if (userLatitude && userLongitude) {
+        
+        fetch(`/api/nearby_users?latitude=${userLatitude}&longitude=${userLongitude}&radius=${radius}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.length > 0) {
+                    data.forEach(user => {
+                        nearbyUsersDiv.innerHTML += `${user.name} is ${user.distance.toFixed(2)} km away.<br>`;
+                    });
+                } else {
+                    nearbyUsersDiv.innerHTML = "No users found within the selected radius.";
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching nearby users:', error);
+                nearbyUsersDiv.innerHTML = "Error fetching nearby users.";
+            });
+    }
+}
+</script>
+
+</body>
 </html>
+

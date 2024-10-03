@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user: one
+  salon_name: MyString
+  appointment_date: 2024-10-03 10:31:08
+  service: MyString
+
+two:
+  user: two
+  salon_name: MyString
+  appointment_date: 2024-10-03 10:31:08
+  service: MyString

@@ -10,20 +10,21 @@ class User < ApplicationRecord
 
          geocoded_by :address
          after_validation :geocode, if: :address_changed?
+         has_many :appointments
 
-         def geocode_address
-          if address.present? && address_changed?
-            begin
-              results = Geocoder.search(address)
-              if results.any?
-                self.latitude = results.first.latitude
-                self.longitude = results.first.longitude
-              else
-                errors.add(:address, "could not be geocoded")
-              end
-            rescue => e
-              errors.add(:address, "geocoding service error: #{e.message}")
-            end
-          end
-        end
+        #  def geocode_address
+        #   if address.present? && address_changed?
+        #     begin
+        #       results = Geocoder.search(address)
+        #       if results.any?
+        #         self.latitude = results.first.latitude
+        #         self.longitude = results.first.longitude
+        #       else
+        #         errors.add(:address, "could not be geocoded")
+        #       end
+        #     rescue => e
+        #       errors.add(:address, "geocoding service error: #{e.message}")
+        #     end
+        #   end
+        # end
 end

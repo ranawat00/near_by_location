@@ -29,16 +29,18 @@ class Api::UsersController < ApplicationController
             end
         end
 
-
-        def find_nearby_users
-            current_location = [params[:latitude], params[:longitude]]
-            radius = params[:radius] || 50 # Default radius of 10 kilometers
+        # def nearby_users
+        #     # Retrieve the user's latitude and longitude from params
+        #     user_latitude = params[:latitude].to_f
+        #     user_longitude = params[:longitude].to_f
+        #     radius = params[:radius].to_f # In kilometers
         
-            nearby_users = User.near(current_location, radius)
-            
-            render json: nearby_users, status: :ok
-        end
-    
+        #     # Find users within the given radius using Geocoder
+        #     @users = User.near([user_latitude, user_longitude], radius)
+        
+        #     # Return the user data as JSON
+        #     render json: @users
+        #   end
     
 
 

@@ -10,11 +10,18 @@ Rails.application.routes.draw do
   # Render dynamic PWA files from app/views/pwa/*
   get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
   get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
-   root to: "locate#index"
+  root to: "locations#index"
+  post 'fetch_location', to: 'locations#fetch_location'
+ 
+
    namespace :api do
+       
       post 'sign_up', to: 'users#sign_up'
       post 'login', to: 'users#login'
-      get 'find_nearby_users', to: 'users#find_nearby_users'
+      get 'nearby_users', to: 'users#nearby_users'
       get 'geocode', to: 'geocoder#geocode'
+      resources :users do
+         resources :appointments, only: [:index, :create, :show, :update, :destroy]
+       end
    end
 end

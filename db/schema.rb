@@ -10,8 +10,28 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_09_25_124635) do
+ActiveRecord::Schema[7.2].define(version: 2024_10_03_050108) do
+  create_table "appointments", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.string "salon_name"
+    t.datetime "appointment_date"
+    t.string "service"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_appointments_on_user_id"
+  end
+
   create_table "locates", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "locations", force: :cascade do |t|
+    t.string "address"
+    t.float "latitude"
+    t.float "longitude"
+    t.string "city"
+    t.string "country"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -32,4 +52,6 @@ ActiveRecord::Schema[7.2].define(version: 2024_09_25_124635) do
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
+
+  add_foreign_key "appointments", "users"
 end
